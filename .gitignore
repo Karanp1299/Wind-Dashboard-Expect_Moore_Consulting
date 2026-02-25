@@ -1,0 +1,25 @@
+# System / user files
+.bash_history
+.bash_logout
+.bash_profile
+.bashrc
+.cache/
+.lesshst
+.local/
+.ssh/
+
+# Python
+__pycache__/
+*.pyc
+.env
+venv/
+
+# Node / Frontend
+node_modules/
+
+# Build
+dist/
+
+# OS
+.DS_Store
+
