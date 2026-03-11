@@ -21,8 +21,8 @@ AWS_REGION = "us-east-1"
 S3_BUCKET = "wind-turbine-dashboard"
 KPI_FILE_KEY = "kpis_final.json"
 
-# Bedrock Model (Claude Haiku)
-MODEL_ID = "anthropic.claude-3-haiku-20240307-v1:0"
+# Bedrock Model (Claude Sonnet 4 - ARN format)
+MODEL_ID = "arn:aws:bedrock:us-east-1:138241447993:inference-profile/global.anthropic.claude-sonnet-4-20250514-v1:0"
 
 # Limits
 MAX_USER_CHARS = 2000
