@@ -21,8 +21,8 @@ BEDROCK_REGION = "us-west-2"
 S3_BUCKET = "wind-turbine-dashboard"
 KPI_FILE_KEY = "kpis_final.json"
 
-# Bedrock Model (Claude Sonnet 4)
-MODEL_ID = "anthropic.claude-sonnet-4-20250514-v1:0"
+# Bedrock Model (Claude 3 Haiku — confirmed working in us-west-2)
+MODEL_ID = "anthropic.claude-3-haiku-20240307-v1:0"
 
 # Limits
 MAX_USER_CHARS = 2000
