@@ -14,15 +14,15 @@ from pydantic import BaseModel
 # CONFIG
 # --------------------------------------------------
 
-# Single region for everything
-AWS_REGION = "us-east-1"
+S3_REGION = "us-east-1"
+BEDROCK_REGION = "us-west-2"
 
 # S3
 S3_BUCKET = "wind-turbine-dashboard"
 KPI_FILE_KEY = "kpis_final.json"
 
-# Bedrock Model (Claude Sonnet 4 - ARN format)
-MODEL_ID = "arn:aws:bedrock:us-east-1:138241447993:inference-profile/global.anthropic.claude-sonnet-4-20250514-v1:0"
+# Bedrock Model (Claude 3 Haiku — fast, reliable, low cost)
+MODEL_ID = "anthropic.claude-3-haiku-20240307-v1:0"
 
 # Limits
 MAX_USER_CHARS = 2000
@@ -35,12 +35,12 @@ MAX_TOKENS = 800
 
 bedrock = boto3.client(
     "bedrock-runtime",
-    region_name=AWS_REGION
+    region_name=BEDROCK_REGION
 )
 
 s3 = boto3.client(
     "s3",
-    region_name=AWS_REGION
+    region_name=S3_REGION
 )
 
 
@@ -110,7 +110,7 @@ def clean_llm_output(text: str) -> str:
     return re.sub(r"<reasoning>.*?</reasoning>", "", text, flags=re.DOTALL).strip()
 
 # --------------------------------------------------
-# CALL OPENAI GPT-OSS VIA BEDROCK
+# CALL CLAUDE VIA BEDROCK (us-west-2)
 # --------------------------------------------------
 
 def call_llm(prompt: str) -> str:
@@ -255,6 +255,6 @@ def health():
     return {
         "status": "ok",
         "service": "wind-turbine-ai",
-        "region": AWS_REGION,
+        "region": BEDROCK_REGION,
         "model": MODEL_ID
     }

@@ -52,9 +52,28 @@ sudo cp "$FRONTEND_DIR/cw-logo2026.png" "$DEPLOY_DIR/" 2>/dev/null || true
 sudo cp "$FRONTEND_DIR/vite.svg" "$DEPLOY_DIR/" 2>/dev/null || true
 echo "  ✓ Files deployed"
 
-# 5. Update nginx config and reload
+# 5. Restart backend (chatbot)
 echo ""
-echo "[5/5] Updating nginx config and reloading..."
+echo "[5/7] Restarting chatbot backend..."
+cp "$REPO_DIR/chatbot/app.py" "$HOME/chatbot/app.py" 2>/dev/null || true
+UVICORN_PID=$(pgrep -f "uvicorn app:app" 2>/dev/null || true)
+if [ -n "$UVICORN_PID" ]; then
+    kill "$UVICORN_PID" 2>/dev/null || true
+    sleep 2
+fi
+cd "$HOME/chatbot"
+nohup uvicorn app:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &
+sleep 2
+if pgrep -f "uvicorn app:app" > /dev/null; then
+    echo "  ✓ Backend restarted (PID: $(pgrep -f 'uvicorn app:app'))"
+else
+    echo "  ✗ WARNING: Backend may not have started. Check ~/chatbot/server.log"
+fi
+cd "$REPO_DIR"
+
+# 6. Update nginx config and reload
+echo ""
+echo "[6/7] Updating nginx config and reloading..."
 if [ -f "$REPO_DIR/nginx.conf" ]; then
     sudo cp "$REPO_DIR/nginx.conf" /etc/nginx/nginx.conf
 fi
@@ -68,6 +87,13 @@ else
     echo "  ✓ Backup restored. No changes applied."
     exit 1
 fi
+
+# 7. Verify health
+echo ""
+echo "[7/7] Verifying backend health..."
+sleep 1
+HEALTH=$(curl -s http://localhost:8000/health 2>/dev/null || echo "unreachable")
+echo "  Backend: $HEALTH"
 
 echo ""
 echo "========================================="
