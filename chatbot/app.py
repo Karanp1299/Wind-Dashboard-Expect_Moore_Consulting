@@ -21,8 +21,8 @@ AWS_REGION = "us-east-1"
 S3_BUCKET = "wind-turbine-dashboard"
 KPI_FILE_KEY = "kpis_final.json"
 
-# Bedrock Model (OpenAI on-demand)
-MODEL_ID = "openai.gpt-oss-120b-1:0"
+# Bedrock Model (Claude Haiku)
+MODEL_ID = "anthropic.claude-3-haiku-20240307-v1:0"
 
 # Limits
 MAX_USER_CHARS = 2000
@@ -116,18 +116,15 @@ def clean_llm_output(text: str) -> str:
 def call_llm(prompt: str) -> str:
 
     body = {
+        "anthropic_version": "bedrock-2023-05-31",
+        "max_tokens": MAX_TOKENS,
+        "temperature": 0.2,
         "messages": [
-            {
-                "role": "system",
-                "content": "You are a precise data analytics assistant."
-            },
             {
                 "role": "user",
                 "content": prompt
             }
-        ],
-        "max_tokens": MAX_TOKENS,
-        "temperature": 0.2
+        ]
     }
 
     try:
@@ -141,9 +138,9 @@ def call_llm(prompt: str) -> str:
 
         result = json.loads(response["body"].read())
 
-        # OpenAI-style parsing
-        if "choices" in result:
-            raw = result["choices"][0]["message"]["content"]
+        # Claude-style parsing
+        if "content" in result and len(result["content"]) > 0:
+            raw = result["content"][0]["text"]
             return clean_llm_output(raw)
 
         print("UNEXPECTED BEDROCK RESPONSE:", result)
